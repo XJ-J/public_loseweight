@@ -243,6 +243,29 @@ async function callGemini(prompt, isJson = false, extraConfig = {}) {
     'Content-Type': 'application/json',
     'x-goog-api-key': activeKey
   };
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(bodyData)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error('Gemini 回傳為空');
+
+  return isJson ? JSON.parse(text) : text;
+}
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'x-goog-api-key': activeKey
+  };
   if (activeKey.startsWith('AQ.')) {
     headers['Authorization'] = `Bearer ${activeKey}`;
   }
