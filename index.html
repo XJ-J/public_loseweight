@@ -233,15 +233,15 @@ async function callGemini(prompt, isJson = false, extraConfig = {}) {
   }
 
   const activeKey = (GEMINI_API_KEY || '').trim();
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(activeKey)}`;
+  // 改為反應最快、官方支援最穩定的 2.5-flash 端點
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(activeKey)}`;
   const bodyData = {
     contents: [{ parts: [{ text: prompt }] }],
-    generationConfig: Object.assign({ maxOutputTokens: 1024 }, isJson ? { responseMimeType: "application/json" } : {}, extraConfig)
+    generationConfig: Object.assign({ maxOutputTokens: 800, temperature: 0.7 }, isJson ? { responseMimeType: "application/json" } : {}, extraConfig)
   };
 
   const headers = {
-    'Content-Type': 'application/json',
-    'x-goog-api-key': activeKey
+    'Content-Type': 'application/json'
   };
 
   const res = await fetch(endpoint, {
