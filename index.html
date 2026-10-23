@@ -1031,8 +1031,7 @@ async function coach(){
 使用者:身高${p.height}cm、目前體重${f.w}kg、目標${p.goal}kg、${p.age}歲、${p.sex==='m'?'男':'女'}、目標熱量${p.kcal}kcal/天。
 基礎代謝約${f.b}kcal,日常消耗約${f.base}kcal。依近期紀錄,每日平均攝取${Math.round(f.intake)}kcal、運動消耗${Math.round(f.burn)}kcal,預估一週體重變化${f.week.toFixed(2)}kg。蛋白質目標約${tg.p}g/天。
 最近七天:
-${rows.join('
-')}
+${rows.join('')}
 
 請給 3 到 4 點具體、可以馬上做的建議(例如哪一餐怎麼換、蛋白質怎麼補、運動怎麼加),每點一到兩句,條列用「・」開頭。不要說教,不要重複上面的數字,不要寫標題或前言。`;
   S.coachBusy=true;render();
