@@ -441,8 +441,7 @@ const QRE=/(\d+(?:\.\d+)?|[半一二兩三四五六七八九十])\s*(公克|克|
 function localEstimate(text){
   const list=[],miss=[];
   const segs=[],isQ=t=>/^[\d.半一二兩三四五六七八九十]/.test(t),hasF=t=>allFoods().some(f=>f[1].some(k=>t.indexOf(k)>=0));
-  text.split(/[、,，;；
-+＋]|和|跟|還有/).map(x=>x.trim()).filter(Boolean).forEach(part=>{
+  text.split(/[、,，;；+＋]|和|跟|還有/).map(x=>x.trim()).filter(Boolean).forEach(part=>{
     const g=[];let pre='';
     part.split(/\s+/).filter(Boolean).forEach(tok=>{
       if(hasF(tok)){g.push(pre+tok);pre=''}
