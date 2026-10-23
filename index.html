@@ -262,32 +262,6 @@ async function callGemini(prompt, isJson = false, extraConfig = {}) {
   return isJson ? JSON.parse(text) : text;
 }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'x-goog-api-key': activeKey
-  };
-  if (activeKey.startsWith('AQ.')) {
-    headers['Authorization'] = `Bearer ${activeKey}`;
-  }
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(bodyData)
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `HTTP ${res.status}`);
-  }
-
-  const data = await res.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!text) throw new Error('Gemini 回傳為空');
-
-  return isJson ? JSON.parse(text) : text;
-}
-
 
 /* ---------- helpers ---------- */
 const $=(s,r=document)=>r.querySelector(s);
@@ -464,7 +438,7 @@ const QRE=/(\d+(?:\.\d+)?|[半一二兩三四五六七八九十])\s*(公克|克|
 function localEstimate(text){
   const list=[],miss=[];
   const segs=[],isQ=t=>/^[\d.半一二兩三四五六七八九十]/.test(t),hasF=t=>allFoods().some(f=>f[1].some(k=>t.indexOf(k)>=0));
-  text.split(/[、,，;；+＋]|和|跟|還有/).map(x=>x.trim()).filter(Boolean).forEach(part=>{
+  text.split(/[、,，;；\n+＋]|和|跟|還有/).map(x=>x.trim()).filter(Boolean).forEach(part=>{
     const g=[];let pre='';
     part.split(/\s+/).filter(Boolean).forEach(tok=>{
       if(hasF(tok)){g.push(pre+tok);pre=''}
@@ -1054,7 +1028,7 @@ async function coach(){
 使用者:身高${p.height}cm、目前體重${f.w}kg、目標${p.goal}kg、${p.age}歲、${p.sex==='m'?'男':'女'}、目標熱量${p.kcal}kcal/天。
 基礎代謝約${f.b}kcal,日常消耗約${f.base}kcal。依近期紀錄,每日平均攝取${Math.round(f.intake)}kcal、運動消耗${Math.round(f.burn)}kcal,預估一週體重變化${f.week.toFixed(2)}kg。蛋白質目標約${tg.p}g/天。
 最近七天:
-${rows.join('')}
+${rows.join('\n')}
 
 請給 3 到 4 點具體、可以馬上做的建議(例如哪一餐怎麼換、蛋白質怎麼補、運動怎麼加),每點一到兩句,條列用「・」開頭。不要說教,不要重複上面的數字,不要寫標題或前言。`;
   S.coachBusy=true;render();
