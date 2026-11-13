@@ -485,6 +485,25 @@ svg text{fill:#c5c6ca!important}
 [style*="background:#faf4ee"],[style*="background: #faf4ee"],[style*="background:#fff9"],[style*="background:#f8f2"],[style*="background:#fff4"],[style*="background:#f5ea"],[style*="background:#fff7"]{background:#222327!important;color:#e9e9e9!important;border-color:#35373b!important}
 [style*="color:#928b82"],[style*="color:#9a8174"],[style*="color:#947e75"]{color:#aeb0b5!important}
 @media(max-width:390px){main{padding:23px 14px 120px!important}.card{padding:17px!important}.stat{padding:14px!important}.stat .big{font-size:21px!important}.nav{padding-left:5px!important;padding-right:5px!important}.nav button{font-size:9px!important}.minimal-shortcut{padding:10px!important}}
+</style><style id="navigationCleanDarkFix">
+/* Final clean dark system: no cream panels, no legacy scene UI */
+:root{--ink:#f4f4f5!important;--cream:#0c0d0f!important;--paper:#17181b!important;--outline:#303238!important}
+body,html{background:#0c0d0f!important;color:#ededee!important}
+.world-room,.location-banner,.world-hub,.world-guide,.world-room-stage,.room-note{display:none!important}
+.card,.card:first-of-type,.recipe-card,.pet-growth-card,.pet-stage,.pet-shop-item,.street-door,.mellow-street,.badge-tile,.stat,.grid>.stat,.grid>.stat:nth-child(n),.body-stats>div{background:#191a1e!important;background-image:none!important;color:#ececee!important;border-color:#303137!important;box-shadow:none!important}
+.stat,.grid>.stat,.grid>.stat:nth-child(n),.body-stats>div{background:#232428!important}
+.card p,.card label,.card small,.notice{color:#a3a5ab!important}
+.card h2,.card h3,.card strong,.stat .big{color:#f0f0f2!important}
+.nav button.active,.nav button:focus,.nav button:focus-visible{background:#2c2e33!important;border:1px solid #45474d!important;box-shadow:none!important;outline:none!important;color:#f5f5f6!important}
+.nav button:not(.active){border:1px solid transparent!important;box-shadow:none!important}
+.room-object,.room-object .room-label{background:#232428!important;color:#ededed!important}
+.world-dialog,.world-dialog-shade .world-dialog{background:#1b1c20!important;color:#f2f2f3!important;border:1px solid #34363b!important}
+.world-dialog p{color:#c3c5c9!important}
+.mellow-direct{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 17px}
+.mellow-direct button{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;flex:1 1 29%!important;min-width:100px!important;min-height:47px!important;background:#24262a!important;border:1px solid #36383d!important;border-radius:12px!important;color:#e8e9eb!important;font-size:12px!important;font-weight:600!important;box-shadow:none!important}
+.mellow-direct button:active{background:#36383e!important}
+.mellow-section-title{font-size:10px!important;color:#898d94!important;letter-spacing:2px!important;font-weight:650!important;margin:8px 0 10px!important}
+#home .minimal-intro{background:#191a1e!important}
 </style></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-intro"><span class="minimal-eyebrow">MELLOW · DAILY LIFE</span><div class="minimal-intro-row"><div><h2>讓日常，慢慢變好。</h2><p>一點點累積，就是很好的生活。</p></div><span class="minimal-orbit" aria-hidden="true">m.</span></div></div><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('home');document.getElementById('petStageLabel')?.scrollIntoView({behavior:'smooth',block:'start'})" class="minimal-shortcut"><span class="minimal-symbol pet-symbol">04</span><span><strong>寵物管理</strong><small>陪伴、成長與收藏</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
 <rect fill="#b4d6d8" height="430" width="480"></rect><path d="M0 95Q110 20 218 100T480 60V430H0Z" fill="#a9c6ad"></path><path d="M0 140Q100 91 225 142T480 110V430H0Z" fill="url(#grass)"></path>
@@ -878,11 +897,7 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
 // World visual enhancements, independent of existing save data.
 (function(){
  const pageDetails={food:['飲食管理','料理・營養・美味日常','🍓','#f8d8ce','#fff2df','#c89787'],fitness:['運動管理','運動・散步・身體紀錄','🌿','#d5e8c9','#f6efcf','#90b39a'],calendar:['日曆','日程、紀錄與趨勢','🕰️','#f6e0ae','#fff5df','#c8a86f'],study:['讀書管理','專注時間與讀書計畫','📚','#e3d9f4','#f8ecff','#b7a0d4'],settings:['個人設定','個人資料・備份・設定','🏡','#d7e8f4','#fff4e6','#a6b6ce']};
- for(const [id,detail] of Object.entries(pageDetails)){
-  const section=document.getElementById(id);if(!section||section.querySelector('.location-banner'))continue;
-  const banner=document.createElement('div');banner.className='location-banner';banner.dataset.art=detail[2];banner.style.cssText=`--loc-a:${detail[3]};--loc-b:${detail[4]};--loc-border:${detail[5]}`;
-  banner.innerHTML=`<small>✦ MELLOW WONDER TOWN</small><h2>${detail[0]}</h2><p>${detail[1]}</p>`;section.prepend(banner);
- }
+ /* Removed legacy decorative page banners */
  const scene=document.getElementById('worldScene');if(scene){
   const title=document.createElement('div');title.className='scene-title';title.textContent='✦ WONDER TOWN ✦';scene.append(title);
   const decos=[['🌳','4%','68%'],['🌷','17%','83%'],['🌲','81%','60%'],['🍄','89%','86%'],['🌼','46%','85%'],['🦋','70%','20%'],['🌿','32%','66%']];
@@ -919,7 +934,7 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
    room.append(stage);const note=document.createElement('div');note.className='room-note';note.textContent=c.hint;room.append(note);
    const banner=section.querySelector('.location-banner');if(id==='home'&&document.getElementById('worldHub'))document.getElementById('worldHub').after(room);else if(banner)banner.after(room);else section.prepend(room);
  }
- for(const [id] of Object.entries(configs)){const section=document.getElementById(id);if(section)addRoom(id,section)}
+ /* Removed legacy exploratory room widgets. Direct navigation replaces them. */
  const hub=document.getElementById('worldHub');if(hub){
    const hud=document.createElement('div');hud.className='world-hud';hud.innerHTML='<span class="hud-pill">✦ <strong>WONDER TOWN</strong></span><span class="hud-pill" id="worldDateHud"></span><span class="hud-pill">🪙 <strong id="worldCoinHud">—</strong></span><span class="hud-pill">⭐ <strong id="worldXpHud">—</strong></span>';
    hub.insertBefore(hud,hub.querySelector('.world-scene'));
@@ -931,5 +946,38 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
    };update();document.addEventListener('click',()=>requestAnimationFrame(update));
  }
  window.worldModal=function(title,body){document.querySelector('.world-dialog-shade')?.remove();const shade=document.createElement('div');shade.className='world-dialog-shade';shade.setAttribute('role','presentation');const dialog=document.createElement('div');dialog.className='world-dialog';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');const h=document.createElement('h3');h.textContent=title;const p=document.createElement('p');p.textContent=body;const close=document.createElement('button');close.className='room-action';close.textContent='知道了';close.onclick=()=>shade.remove();shade.onclick=e=>{if(e.target===shade)shade.remove()};dialog.append(h,p,close);shade.append(dialog);document.body.append(shade);close.focus()};
+})();
+</script><script id="directSectionNavigation">
+(function(){
+ const pages={
+  study:[['讀書計畫','studyPlan'],['專注計時','studyTimer'],['科目管理','subjectList']],
+  food:[['飲食紀錄','foodEntries'],['餐點建議','recipeSuggestions'],['食物資料庫','catalogResult']],
+  fitness:[['運動紀錄','exerciseEntries'],['新增運動','exerciseSelect']],
+  calendar:[['體重日曆','modeWeight'],['讀書日曆','modeStudy'],['趨勢圖','weightTrendCard']],
+  settings:[['個人設定','settings']]
+ };
+ function target(id){
+   const el=document.getElementById(id);
+   if(!el)return false;
+   if(id==='modeWeight'||id==='modeStudy')el.click();
+   el.scrollIntoView({behavior:'smooth',block:'start'});
+   return true;
+ }
+ function init(){
+  Object.entries(pages).forEach(([page,links])=>{
+   const section=document.getElementById(page);
+   if(!section||section.querySelector('.mellow-direct'))return;
+   const group=document.createElement('div');group.className='mellow-direct';group.setAttribute('aria-label','快速導覽');
+   links.forEach(([label,id])=>{
+    if(!document.getElementById(id))return;
+    const b=document.createElement('button');b.type='button';b.textContent=label;
+    b.addEventListener('click',()=>target(id));group.appendChild(b);
+   });
+   if(!group.children.length)return;
+   const title=document.createElement('div');title.className='mellow-section-title';title.textContent='QUICK ACCESS';
+   section.prepend(group);section.prepend(title);
+  });
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script></body></html>
