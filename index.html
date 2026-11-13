@@ -587,6 +587,58 @@ select option{background:#fafaf8!important;color:#303230!important}
 #home .card:has(#petPlayroom),#home .card:has(#petGachaPanel),#home .card:has(#petRoomPanel),#home .card:has(#petWardrobe),#home .card:has(#badgeGallery){display:none!important}
 #home .minimal-shortcut:has(.pet-symbol){display:none!important}
 @media(max-width:390px){.muji-panel>summary{padding:16px}.muji-panel>.muji-panel-body{padding:0 8px 8px}.muji-panel .card{padding:13px!important}}
+</style><style id="mujiContrastRepair">
+/* MUJI consistency: override all legacy dark component rules */
+html body main #home .grid>.stat,
+html body main #home .grid>.stat:nth-child(n),
+html body main #home .stat,
+html body main #study .stat,
+html body main #study #studySummary .stat,
+html body main #food .stat,
+html body main #food .card .grid>.stat:nth-child(n),
+html body main #fitness .stat,
+html body main #calendar .stat,
+html body main #settings .stat,
+html body main .body-stats>div{
+ background:#e5e6e2!important;background-color:#e5e6e2!important;background-image:none!important;
+ color:#343a35!important;border:1px solid #cfd3cc!important;box-shadow:none!important
+}
+html body main #home .stat .big,
+html body main #study .stat .big,
+html body main #study #studySummary .stat .big,
+html body main #food .stat .big,
+html body main #fitness .stat .big,
+html body main #calendar .stat .big,
+html body main #settings .stat .big,
+html body main .stat .big{
+ color:#303630!important;-webkit-text-fill-color:#303630!important;text-shadow:none!important;opacity:1!important
+}
+html body main #home .stat small,
+html body main #study .stat small,
+html body main #food .stat small,
+html body main #fitness .stat small,
+html body main #calendar .stat small,
+html body main #settings .stat small,
+html body main .stat small{color:#6d756e!important;-webkit-text-fill-color:#6d756e!important;opacity:1!important}
+html body main .card h2,
+html body main .card h3,
+html body main .card h4,
+html body main .card strong,
+html body main .card b,
+html body main .muji-panel .card h2,
+html body main .muji-panel .card h3{color:#343a35!important;-webkit-text-fill-color:#343a35!important;opacity:1!important}
+html body main .card,html body main .muji-panel .card{background:#f4f4f1!important;background-image:none!important;color:#343a35!important;border-color:#d4d7d0!important}
+html body main .card .notice,html body main .card p,html body main .card label{color:#747b74!important}
+html body main #studyTimeline{background:#e8e9e5!important;border-color:#d1d5cd!important;color:#596159!important}
+html body main #studyTimeline .hour-slot{background:#e8e9e5!important;border-bottom:1px solid #d3d7cf!important;color:#747c74!important}
+html body main #studyTimeline .time-axis{background:#e8e9e5!important}
+html body main #studyTimeline .timeline-track{background:repeating-linear-gradient(to bottom,#f2f2ee 0,#f2f2ee 29px,#d4d8d1 29px,#d4d8d1 30px)!important}
+html body main #studyTimeline .study-block{color:#303630!important}
+html body main #studyTimeline .study-block span{color:#303630!important}
+.muji-timeline-scroll{max-height:340px;overflow-y:auto;overflow-x:hidden;border:1px solid #d4d8d0;border-radius:13px;overscroll-behavior:contain}
+.muji-timeline-scroll #studyTimeline{margin:0!important;border:0!important;border-radius:0!important}
+#level,#xp,#rewardPanel,#wishList,#wishName,#wishCost{display:none!important}
+#home .card:has(#rewardPanel),#home .card:has(#missions){display:none!important}
 </style></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-intro"><span class="minimal-eyebrow">MELLOW · DAILY LIFE</span><div class="minimal-intro-row"><div><h2>讓日常，慢慢變好。</h2><p>一點點累積，就是很好的生活。</p></div><span class="minimal-orbit" aria-hidden="true">m.</span></div></div><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
 <rect fill="#b4d6d8" height="430" width="480"></rect><path d="M0 95Q110 20 218 100T480 60V430H0Z" fill="#a9c6ad"></path><path d="M0 140Q100 91 225 142T480 110V430H0Z" fill="url(#grass)"></path>
@@ -1079,6 +1131,23 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
    home.querySelectorAll('.card').forEach(c=>{if(c.querySelector('#petPlayroom,#petGachaPanel,#petRoomPanel,#petWardrobe,#badgeGallery'))c.style.display='none'});
   }
   const nav=document.getElementById('nav');if(nav)nav.querySelectorAll('button span').forEach(span=>span.remove());
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+})();
+</script><script id="mujiCleanupRewards">
+(function(){
+ function run(){
+  for(const id of ['level','xp']){
+   const el=document.getElementById(id);if(el)el.style.display='none';
+  }
+  for(const id of ['rewardPanel','missions']){
+   const el=document.getElementById(id);const card=el?.closest('.card');if(card)card.style.display='none';
+  }
+  const timeline=document.getElementById('studyTimeline');
+  if(timeline&&!timeline.closest('.muji-timeline-scroll')){
+   const wrapper=document.createElement('div');wrapper.className='muji-timeline-scroll';
+   timeline.parentNode.insertBefore(wrapper,timeline);wrapper.appendChild(timeline);
+  }
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
 })();
