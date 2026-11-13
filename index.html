@@ -1172,7 +1172,7 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
   const food=el('food');if(!food||el('aiFoodPanel'))return;
   const target=[...food.querySelectorAll('.muji-panel')].find(d=>d.querySelector('#quickFood'))?.querySelector('.muji-panel-body')||food;
   const panel=document.createElement('div');panel.id='aiFoodPanel';panel.className='ai-food-box';
-  panel.innerHTML='<h3>AI 飲食辨識</h3><p>使用你自己的 OpenAI API Key 分析食物文字或照片，預估熱量與營養素。辨識結果需確認後才會存入今日飲食。</p><label for="aiFoodKey">OpenAI API Key</label><input id="aiFoodKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-..." /><p>金鑰僅保存在目前開啟的頁面記憶體，不會寫入 GitHub 或本機儲存空間。這是純前端網站，金鑰仍會直接傳送至 OpenAI；請只使用有額度限制的個人金鑰，勿在共用裝置輸入。</p><div class="ai-actions"><button type="button" id="aiConnect">使用金鑰</button><button type="button" id="aiForget">清除金鑰</button></div><label for="aiFoodText">食物描述</label><textarea id="aiFoodText" rows="3" placeholder="例如：一碗牛肉麵，喝了一半的湯"></textarea><label for="aiFoodImage">食物照片（選填，最大 5MB）</label><input id="aiFoodImage" type="file" accept="image/jpeg,image/png,image/webp" /><button class="primary" type="button" id="aiRecognize" style="margin-top:12px;width:100%">AI 分析並預覽</button><div class="ai-status" id="aiFoodStatus" role="status">尚未設定金鑰</div><div id="aiFoodResult" class="ai-result"></div><button type="button" id="aiFoodSave" disabled style="width:100%;margin-top:10px">確認加入今日飲食</button>';
+  panel.innerHTML='<h3>AI 飲食辨識</h3><p>使用你自己的 Gemini API Key 分析食物文字或照片，預估熱量與營養素。辨識結果需確認後才會存入今日飲食。</p><label for="aiFoodKey">Gemini API Key</label><input id="aiFoodKey" type="password" autocomplete="off" spellcheck="false" placeholder="輸入 Google AI Studio API Key" /><p>金鑰僅暫存在本頁記憶體，不會寫入 GitHub 或 localStorage。此網站由瀏覽器直接呼叫 Gemini API，請限制金鑰使用範圍及配額；公開多人使用建議改用後端代理。</p><div class="ai-actions"><button type="button" id="aiConnect">使用金鑰</button><button type="button" id="aiForget">清除金鑰</button></div><label for="aiFoodText">食物描述</label><textarea id="aiFoodText" rows="3" placeholder="例如：一碗牛肉麵，喝了一半的湯"></textarea><label for="aiFoodImage">食物照片（選填，最大 5MB）</label><input id="aiFoodImage" type="file" accept="image/jpeg,image/png,image/webp" /><button class="primary" type="button" id="aiRecognize" style="margin-top:12px;width:100%">AI 分析並預覽</button><div class="ai-status" id="aiFoodStatus" role="status">尚未設定金鑰</div><div id="aiFoodResult" class="ai-result"></div><button type="button" id="aiFoodSave" disabled style="width:100%;margin-top:10px">確認加入今日飲食</button>';
   target.prepend(panel);
   el('aiConnect').addEventListener('click',()=>{const v=el('aiFoodKey').value.trim();if(!v){status('請輸入 API Key');return}secret=v;el('aiFoodKey').value='';status('金鑰已暫時載入，可開始辨識');});
   el('aiForget').addEventListener('click',()=>{secret='';pending=[];el('aiFoodKey').value='';el('aiFoodResult').replaceChildren();el('aiFoodSave').disabled=true;status('已清除本頁暫存金鑰');});
@@ -1192,16 +1192,16 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
   if(!secret){status('請先輸入金鑰並按「使用金鑰」');return}
   const description=el('aiFoodText').value.trim(),file=el('aiFoodImage').files?.[0];
   if(!description&&!file){status('請輸入食物描述或選擇照片');return}
-  working=true;pending=[];el('aiFoodSave').disabled=true;el('aiRecognize').disabled=true;status('正在向 OpenAI 辨識，可能產生 API 費用…');
+  working=true;pending=[];el('aiFoodSave').disabled=true;el('aiRecognize').disabled=true;status('正在向 Google Gemini 辨識，可能產生 API 費用…');
   try{
    const data=await imageData(file);
-   const content=[{type:'text',text:'請辨識這餐實際可見或描述的食物，估算每項的熱量及蛋白質、碳水、脂肪（單位 kcal/g）。請只回傳 JSON object，格式 {"items":[{"name":"食物名稱與估計份量","k":123,"p":10,"c":20,"f":4}],"note":"估算不確定性說明"}。若無法辨識請回傳 items 空陣列。不要捏造精確份量，必要時採合理估計。使用者描述：'+description}];
-   if(data)content.push({type:'image_url',image_url:{url:data,detail:'low'}});
+   const content=[{text:'請辨識這餐實際可見或描述的食物，估算每項的熱量及蛋白質、碳水、脂肪（單位 kcal/g）。請只回傳 JSON object，格式 {"items":[{"name":"食物名稱與估計份量","k":123,"p":10,"c":20,"f":4}],"note":"估算不確定性說明"}。若無法辨識請回傳 items 空陣列。不要捏造精確份量，必要時採合理估計。使用者描述：'+description}];
+   if(data){const comma=data.indexOf(',');const mime=data.slice(5,data.indexOf(';'));content.push({inline_data:{mime_type:mime,data:data.slice(comma+1)}})}
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),45000);
    let response;
-   try{response=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+secret,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-4o-mini',temperature:0.1,response_format:{type:'json_object'},messages:[{role:'user',content}]}),signal:controller.signal})}finally{clearTimeout(timer)}
+   try{response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',{method:'POST',headers:{'x-goog-api-key':secret,'Content-Type':'application/json'},body:JSON.stringify({contents:[{role:'user',parts:content}],generationConfig:{responseMimeType:'application/json',temperature:0.1}}),signal:controller.signal})}finally{clearTimeout(timer)}
    if(!response.ok){let msg='HTTP '+response.status;try{const j=await response.json();msg=j.error?.message||msg}catch{}throw Error(msg)}
-   const dataOut=await response.json(),answer=JSON.parse(dataOut.choices?.[0]?.message?.content||'{}');
+   const dataOut=await response.json(),answer=JSON.parse((dataOut.candidates?.[0]?.content?.parts||[]).filter(x=>typeof x.text==='string').map(x=>x.text).join('')||'{}');
    pending=(Array.isArray(answer.items)?answer.items:[]).slice(0,20).map(x=>({name:String(x.name||'未命名食物').slice(0,100),k:num(x.k),p:num(x.p),c:num(x.c),f:num(x.f)})).filter(x=>x.name&&x.k+x.p+x.c+x.f>0);
    const result=el('aiFoodResult');result.replaceChildren();
    for(const x of pending){const row=document.createElement('div');row.className='ai-item';const title=document.createElement('strong');title.textContent=x.name;const detail=document.createElement('div');detail.textContent=x.k+' kcal · 蛋白質 '+x.p+'g · 碳水 '+x.c+'g · 脂肪 '+x.f+'g';row.append(title,detail);result.append(row)}
