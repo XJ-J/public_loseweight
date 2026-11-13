@@ -639,6 +639,18 @@ html body main #studyTimeline .study-block span{color:#303630!important}
 .muji-timeline-scroll #studyTimeline{margin:0!important;border:0!important;border-radius:0!important}
 #level,#xp,#rewardPanel,#wishList,#wishName,#wishCost{display:none!important}
 #home .card:has(#rewardPanel),#home .card:has(#missions){display:none!important}
+</style><style id="aiFoodStyles">
+.ai-food-box{margin:12px 0;padding:16px;background:#e8e9e5;border:1px solid #d2d5ce;border-radius:13px}
+.ai-food-box h3{margin:0 0 8px;font-size:15px;color:#353b35}
+.ai-food-box p{font-size:12px;color:#6d746e;line-height:1.6}
+.ai-food-box label{display:block;margin:12px 0 5px;font-size:12px;color:#5d665e}
+.ai-food-box input,.ai-food-box select,.ai-food-box textarea{width:100%;min-width:0}
+.ai-food-box .ai-actions{display:flex;gap:8px;margin-top:12px}
+.ai-food-box .ai-actions button{flex:1}
+.ai-food-box .ai-result{margin-top:12px;line-height:1.7;font-size:13px;color:#424942}
+.ai-food-box .ai-item{padding:9px 0;border-bottom:1px solid #d4d7d0}
+.ai-food-box .ai-item input{max-width:100px}
+.ai-food-box .ai-status{font-size:12px;color:#687169;margin-top:8px}
 </style></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-intro"><span class="minimal-eyebrow">MELLOW · DAILY LIFE</span><div class="minimal-intro-row"><div><h2>讓日常，慢慢變好。</h2><p>一點點累積，就是很好的生活。</p></div><span class="minimal-orbit" aria-hidden="true">m.</span></div></div><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
 <rect fill="#b4d6d8" height="430" width="480"></rect><path d="M0 95Q110 20 218 100T480 60V430H0Z" fill="#a9c6ad"></path><path d="M0 140Q100 91 225 142T480 110V430H0Z" fill="url(#grass)"></path>
@@ -1150,5 +1162,60 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
   }
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
+})();
+</script><script id="aiFoodRecognition">
+(function(){
+ let secret='',pending=[],working=false;
+ const el=id=>document.getElementById(id);
+ const escapeHTML=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function setup(){
+  const food=el('food');if(!food||el('aiFoodPanel'))return;
+  const target=[...food.querySelectorAll('.muji-panel')].find(d=>d.querySelector('#quickFood'))?.querySelector('.muji-panel-body')||food;
+  const panel=document.createElement('div');panel.id='aiFoodPanel';panel.className='ai-food-box';
+  panel.innerHTML='<h3>AI 飲食辨識</h3><p>使用你自己的 OpenAI API Key 分析食物文字或照片，預估熱量與營養素。辨識結果需確認後才會存入今日飲食。</p><label for="aiFoodKey">OpenAI API Key</label><input id="aiFoodKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-..." /><p>金鑰僅保存在目前開啟的頁面記憶體，不會寫入 GitHub 或本機儲存空間。這是純前端網站，金鑰仍會直接傳送至 OpenAI；請只使用有額度限制的個人金鑰，勿在共用裝置輸入。</p><div class="ai-actions"><button type="button" id="aiConnect">使用金鑰</button><button type="button" id="aiForget">清除金鑰</button></div><label for="aiFoodText">食物描述</label><textarea id="aiFoodText" rows="3" placeholder="例如：一碗牛肉麵，喝了一半的湯"></textarea><label for="aiFoodImage">食物照片（選填，最大 5MB）</label><input id="aiFoodImage" type="file" accept="image/jpeg,image/png,image/webp" /><button class="primary" type="button" id="aiRecognize" style="margin-top:12px;width:100%">AI 分析並預覽</button><div class="ai-status" id="aiFoodStatus" role="status">尚未設定金鑰</div><div id="aiFoodResult" class="ai-result"></div><button type="button" id="aiFoodSave" disabled style="width:100%;margin-top:10px">確認加入今日飲食</button>';
+  target.prepend(panel);
+  el('aiConnect').addEventListener('click',()=>{const v=el('aiFoodKey').value.trim();if(!v){status('請輸入 API Key');return}secret=v;el('aiFoodKey').value='';status('金鑰已暫時載入，可開始辨識');});
+  el('aiForget').addEventListener('click',()=>{secret='';pending=[];el('aiFoodKey').value='';el('aiFoodResult').replaceChildren();el('aiFoodSave').disabled=true;status('已清除本頁暫存金鑰');});
+  el('aiRecognize').addEventListener('click',recognize);
+  el('aiFoodSave').addEventListener('click',saveResult);
+ }
+ function status(msg){if(el('aiFoodStatus'))el('aiFoodStatus').textContent=msg}
+ const num=x=>{const n=Number(x);return Number.isFinite(n)&&n>=0?Math.round(n*10)/10:0};
+ async function imageData(file){
+  if(!file)return null;
+  if(file.size>5*1024*1024)throw Error('照片不可超過 5MB');
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('請使用 JPG、PNG 或 WebP 照片');
+  return await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('讀取照片失敗'));reader.readAsDataURL(file)});
+ }
+ async function recognize(){
+  if(working)return;
+  if(!secret){status('請先輸入金鑰並按「使用金鑰」');return}
+  const description=el('aiFoodText').value.trim(),file=el('aiFoodImage').files?.[0];
+  if(!description&&!file){status('請輸入食物描述或選擇照片');return}
+  working=true;pending=[];el('aiFoodSave').disabled=true;el('aiRecognize').disabled=true;status('正在向 OpenAI 辨識，可能產生 API 費用…');
+  try{
+   const data=await imageData(file);
+   const content=[{type:'text',text:'請辨識這餐實際可見或描述的食物，估算每項的熱量及蛋白質、碳水、脂肪（單位 kcal/g）。請只回傳 JSON object，格式 {"items":[{"name":"食物名稱與估計份量","k":123,"p":10,"c":20,"f":4}],"note":"估算不確定性說明"}。若無法辨識請回傳 items 空陣列。不要捏造精確份量，必要時採合理估計。使用者描述：'+description}];
+   if(data)content.push({type:'image_url',image_url:{url:data,detail:'low'}});
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),45000);
+   let response;
+   try{response=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Authorization':'Bearer '+secret,'Content-Type':'application/json'},body:JSON.stringify({model:'gpt-4o-mini',temperature:0.1,response_format:{type:'json_object'},messages:[{role:'user',content}]}),signal:controller.signal})}finally{clearTimeout(timer)}
+   if(!response.ok){let msg='HTTP '+response.status;try{const j=await response.json();msg=j.error?.message||msg}catch{}throw Error(msg)}
+   const dataOut=await response.json(),answer=JSON.parse(dataOut.choices?.[0]?.message?.content||'{}');
+   pending=(Array.isArray(answer.items)?answer.items:[]).slice(0,20).map(x=>({name:String(x.name||'未命名食物').slice(0,100),k:num(x.k),p:num(x.p),c:num(x.c),f:num(x.f)})).filter(x=>x.name&&x.k+x.p+x.c+x.f>0);
+   const result=el('aiFoodResult');result.replaceChildren();
+   for(const x of pending){const row=document.createElement('div');row.className='ai-item';const title=document.createElement('strong');title.textContent=x.name;const detail=document.createElement('div');detail.textContent=x.k+' kcal · 蛋白質 '+x.p+'g · 碳水 '+x.c+'g · 脂肪 '+x.f+'g';row.append(title,detail);result.append(row)}
+   if(answer.note){const p=document.createElement('p');p.textContent=String(answer.note).slice(0,500);result.append(p)}
+   el('aiFoodSave').disabled=!pending.length;status(pending.length?'已辨識 '+pending.length+' 項，請核對份量與估算值後儲存':'未辨識到可記錄的食物');
+  }catch(err){status('辨識失敗：'+(err.name==='AbortError'?'連線逾時':err.message)+ '。若瀏覽器封鎖跨來源請求，需改用安全的後端代理。')}
+  finally{working=false;el('aiRecognize').disabled=false}
+ }
+ function saveResult(){
+  if(!pending.length)return;
+  if(typeof state==='undefined'||!Array.isArray(state.foods)){status('無法存取飲食資料，請重新整理後再試');return}
+  pending.forEach(x=>state.foods.push({date:today(),name:x.name,n:1,unit:'份',k:x.k,p:x.p,c:x.c,f:x.f}));
+  const count=pending.length;pending=[];save();el('aiFoodSave').disabled=true;el('aiFoodResult').textContent='已加入今日飲食';status('已儲存 '+count+' 項');
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
 })();
 </script></body></html>
