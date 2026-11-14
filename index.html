@@ -745,23 +745,28 @@ html body #nav.nav button span{display:none!important}
 window.mellowGeminiRequest=async function(apiKey,parts,signal){
  const base='https://generativelanguage.googleapis.com/v1beta/';
  const headers={'Content-Type':'application/json','x-goog-api-key':apiKey};
- const listResponse=await fetch(base+'models?pageSize=100',{headers:{'x-goog-api-key':apiKey},signal});
- if(!listResponse.ok){let message='無法取得可用 Gemini 模型（HTTP '+listResponse.status+'）';try{const body=await listResponse.json();message=body.error?.message||message}catch{}throw Error(message)}
- const listing=await listResponse.json();
- const models=(listing.models||[]).filter(m=>Array.isArray(m.supportedGenerationMethods)&&m.supportedGenerationMethods.includes('generateContent')&&/gemini/i.test(m.name)&&/flash/i.test(m.name));
- const score=m=>{const n=m.name.toLowerCase();return (/gemini-3\.8-flash/.test(n)?1000:/gemini-3\.\d+-flash/.test(n)?900:/gemini-3-flash/.test(n)?850:/gemini-2\.5-flash/.test(n)?700:/gemini-2\.0-flash/.test(n)?500:100)-(n.includes('preview')?5:0)-(n.includes('lite')?10:0)};
- models.sort((a,b)=>score(b)-score(a));
- if(!models.length)throw Error('這個 API Key 沒有可用的 Gemini Flash 文字辨識模型，請到 Google AI Studio 確認權限');
- let last='';
- for(const model of models.slice(0,6)){
-  const response=await fetch(base+model.name+':generateContent',{method:'POST',headers,body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',temperature:0.1}}),signal});
-  if(response.ok)return response;
-  let error='HTTP '+response.status;try{const data=await response.json();error=data.error?.message||error}catch{}
-  last=error;
-  if(response.status===400||response.status===404||response.status===429)continue;
-  throw Error(error);
+ const cached=window.__mellowGeminiModelCache;
+ let names=cached&&cached.key===apiKey?cached.names:null;
+ if(!names){
+  const response=await fetch(base+'models?pageSize=100',{headers:{'x-goog-api-key':apiKey},signal});
+  if(!response.ok){let message='取得 Gemini 模型清單失敗（HTTP '+response.status+'）';try{message=(await response.json()).error?.message||message}catch{}throw Error(message)}
+  const listing=await response.json();
+  names=(listing.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes('generateContent')&&/gemini/i.test(m.name)&&/flash/i.test(m.name)).map(m=>m.name);
+  const priority=name=>{const n=name.toLowerCase();return (n.includes('flash-lite')?1000:n.includes('gemini-3.8-flash')?900:n.includes('gemini-3-flash')?800:n.includes('gemini-2.5-flash')?600:300)-(n.includes('preview')?20:0)};
+  names.sort((a,b)=>priority(b)-priority(a));
+  window.__mellowGeminiModelCache={key:apiKey,names};
  }
- throw Error('Gemini 模型無法完成辨識：'+last);
+ if(!names.length)throw Error('這個 API Key 沒有可用的 Gemini Flash 模型');
+ let lastError='';
+ for(const name of names.slice(0,3)){
+  const response=await fetch(base+name+':generateContent',{method:'POST',headers,body:JSON.stringify({contents:[{role:'user',parts}],generationConfig:{responseMimeType:'application/json',temperature:0,maxOutputTokens:700}}),signal});
+  if(response.ok){window.__mellowGeminiModelCache={key:apiKey,names:[name,...names.filter(n=>n!==name)]};return response}
+  let message='HTTP '+response.status;try{message=(await response.json()).error?.message||message}catch{}
+  lastError=message;
+  if(response.status===400||response.status===404)continue;
+  throw Error(message);
+ }
+ throw Error('Gemini 辨識失敗：'+lastError);
 };
 </script></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
@@ -1362,7 +1367,7 @@ function findLocal(line){
 async function gemini(lines){
  if(!apiKey)throw Error('有食物不在資料庫，請先展開「Gemini API 設定」並輸入金鑰');
  const prompt='請只估算下列食物，不要加入未提及的項目。請輸出 JSON 物件 {"items":[{"name":"名稱與份量","k":0,"p":0,"c":0,"f":0}],"note":"不確定性"}。k 是 kcal，其餘為 g。無法估算則回傳空陣列。輸入：'+lines.join('；');
- const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),45000);
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),25000);
  let response;
  try{response=await window.mellowGeminiRequest(apiKey,[{text:prompt}],ctrl.signal)}finally{clearTimeout(timer)}
  if(!response.ok){let msg='HTTP '+response.status;try{const j=await response.json();msg=j.error?.message||msg}catch{}throw Error(msg)}
@@ -1396,7 +1401,7 @@ async function analyze(){
    const ai=await gemini(unknown);pending=[...local,...ai.items];showPreview(ai.note);
    status('資料庫 '+local.length+' 項 · Gemini '+ai.items.length+' 項。請確認估算值再儲存');
   }else status('全部 '+local.length+' 項均由本機資料庫辨識，不會呼叫 Gemini API');
- }catch(e){showPreview();status('資料庫辨識 '+local.length+' 項；其餘未加入：'+(e.name==='AbortError'?'連線逾時':e.message))}
+ }catch(e){showPreview();status('資料庫辨識 '+local.length+' 項；其餘未加入：'+(e.name==='AbortError'?'Gemini 回應超過 25 秒，請稍後重試或改用手動記錄':e.message))}
  finally{busy=false;byId('fuAnalyze').disabled=false}
 }
 function savePending(){
