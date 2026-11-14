@@ -682,6 +682,18 @@ html body #nav.nav button span{display:none!important}
 .food-unified .fu-water{margin-top:12px}
 .food-unified .fu-water .card{margin:0!important;border:0!important;background:transparent!important;padding:0!important}
 .food-unified .fu-water .card h2{font-size:17px!important}
+</style><style id="foodLegacyHideAndApiCollapse">
+/* Food page: only the unified entry and daily summary remain visible */
+#food>.muji-panel,#food>.card,#food>.mellow-direct,#food>.mellow-section-title,#food>.muji-heading{display:none!important}
+#food>.food-unified{display:block!important}
+#food .food-unified .fu-card{display:block!important}
+#food .food-unified #fuStats>.card,#food .food-unified #fuWater>.card{display:block!important}
+#food .food-unified #fuDailyEntries .entry{display:flex!important}
+#food .food-unified #fuStats .card>p.notice{display:none!important}
+#food .food-unified .fu-api-connected{display:none;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;font-size:12px;color:#59675d}
+#food .food-unified[data-api-ready="1"] .fu-api-connected{display:flex}
+#food .food-unified[data-api-ready="1"] .fu-api-settings{display:none}
+#food .food-unified .fu-api-connected button{padding:7px 11px!important;font-size:12px!important;min-height:32px!important}
 </style></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
 <rect fill="#b4d6d8" height="430" width="480"></rect><path d="M0 95Q110 20 218 100T480 60V430H0Z" fill="#a9c6ad"></path><path d="M0 140Q100 91 225 142T480 110V430H0Z" fill="url(#grass)"></path>
@@ -1330,6 +1342,20 @@ function init(){
  const wrapper=document.createElement('div');wrapper.className='food-unified';
  wrapper.innerHTML='<div class="muji-heading"><small>FOOD JOURNAL</small><h2>飲食紀錄</h2><p>輸入食物，優先使用資料庫，找不到再交由 Gemini 估算。</p></div><div class="fu-card"><h2>輸入飲食</h2><textarea id="fuText" rows="3" placeholder="例如：水煮蛋2顆、雞胸肉150g、牛肉麵一碗"></textarea><button class="primary" id="fuAnalyze" type="button" style="width:100%;margin-top:10px">辨識並預覽</button><div class="fu-status" id="fuStatus">資料庫可直接辨識；找不到時才使用 Gemini API。</div><div class="fu-preview" id="fuPreview"></div><button id="fuSave" type="button" style="width:100%;margin-top:10px" disabled>確認加入今日飲食</button><details><summary>Gemini API 設定（選填）</summary><label for="fuKey">API Key</label><input id="fuKey" type="password" autocomplete="off" spellcheck="false" placeholder="Google AI Studio API Key"><div class="fu-actions"><button id="fuKeySave" type="button">使用金鑰</button><button id="fuKeyClear" type="button">清除</button></div><p class="fu-status">金鑰僅暫存在此頁記憶體，不會存入 GitHub 或 localStorage。由瀏覽器直接呼叫 Gemini，請限制配額；API 可能產生費用。</p></details></div><div class="fu-card" id="fuToday"><h2>今天吃了什麼</h2><div id="fuDailyEntries"></div></div><div class="fu-card" id="fuStats"><h2>今日營養總覽</h2></div><div class="fu-card fu-water" id="fuWater"></div>';
  food.append(wrapper);
+ // Keep legacy elements mounted for existing render functions, but remove all old panels from view.
+ [...food.children].filter(node=>node!==wrapper).forEach(node=>{
+  node.style.setProperty('display','none','important');
+  node.setAttribute('aria-hidden','true');
+ });
+ const keySettings=byId('fuKey')?.closest('details');
+ if(keySettings){
+  keySettings.classList.add('fu-api-settings');
+  const connected=document.createElement('div');connected.className='fu-api-connected';
+  const label=document.createElement('span');label.textContent='Gemini API 已設定';
+  const edit=document.createElement('button');edit.type='button';edit.textContent='更換金鑰';
+  edit.addEventListener('click',()=>{wrapper.dataset.apiReady='0';keySettings.open=true;byId('fuKey').focus()});
+  connected.append(label,edit);keySettings.after(connected);
+ }
  byId('fuDailyEntries').append(original);
  byId('fuStats').append(stats);
  byId('fuWater').append(water);
@@ -1342,8 +1368,8 @@ function init(){
  new MutationObserver(refresh).observe(original,{childList:true});refresh();
  byId('fuAnalyze').addEventListener('click',analyze);
  byId('fuSave').addEventListener('click',savePending);
- byId('fuKeySave').addEventListener('click',()=>{const k=byId('fuKey').value.trim();if(!k){status('請輸入 Gemini API Key');return}apiKey=k;byId('fuKey').value='';status('已暫時載入 Gemini API Key')});
- byId('fuKeyClear').addEventListener('click',()=>{apiKey='';byId('fuKey').value='';status('已清除 API Key')});
+ byId('fuKeySave').addEventListener('click',()=>{const k=byId('fuKey').value.trim();if(!k){status('請輸入 Gemini API Key');return}apiKey=k;byId('fuKey').value='';wrapper.dataset.apiReady='1';if(keySettings)keySettings.open=false;status('Gemini API 已設定，找不到資料庫食物時會自動辨識')});
+ byId('fuKeyClear').addEventListener('click',()=>{apiKey='';wrapper.dataset.apiReady='0';byId('fuKey').value='';status('已清除 API Key')});
  food.dataset.unified='1';
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
