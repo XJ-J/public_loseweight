@@ -1142,7 +1142,15 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
    section.dataset.muji='1';
    section.querySelectorAll(':scope > .mellow-direct,:scope > .mellow-section-title').forEach(n=>n.remove());
    const cards=[...section.children].filter(x=>x.classList.contains('card'));
-   cards.forEach((card,i)=>{const title=card.querySelector('h2,h3')?.textContent?.trim()||'詳細資料';const [details,body]=panel(String(i+1).padStart(2,'0')+'　'+title,i===0);body.append(card);section.append(details)});
+   if(id==='calendar'&&cards.length>=2){
+    const first=cards[0],second=cards[1];
+    const firstTitle=first.querySelector('h2');
+    if(firstTitle)firstTitle.remove();
+    while(first.firstChild)second.insertBefore(first.firstChild,second.firstChild);
+    first.remove();
+    cards.shift();
+   }
+   cards.forEach((card,i)=>{const title=id==='calendar'&&i===0?'我的日曆':card.querySelector('h2,h3')?.textContent?.trim()||'詳細資料';const [details,body]=panel(String(i+1).padStart(2,'0')+'　'+title,i===0);body.append(card);section.append(details)});
   }
   const home=document.getElementById('home');
   if(home){
