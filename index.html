@@ -658,6 +658,30 @@ html body #nav.nav button,html body #nav.nav button:not(.active){display:flex!im
 html body #nav.nav button.active{background:#dce0d9!important;border:1px solid #c9cec6!important;color:#303831!important;font-weight:720!important}
 html body #nav.nav button span{display:none!important}
 @media(max-width:360px){html body #nav.nav{gap:1px!important;padding-left:5px!important;padding-right:5px!important}html body #nav.nav button{font-size:13px!important}}
+</style><style id="unifiedFoodStyles">
+/* Unified food page — single entry point */
+#food[data-unified="1"]>.muji-panel,#food[data-unified="1"]>.muji-heading,#food[data-unified="1"]>.mellow-direct,#food[data-unified="1"]>.mellow-section-title{display:none!important}
+#food[data-unified="1"]>.food-unified{display:block!important}
+.food-unified{margin:12px 0 110px;color:#343a35}
+.food-unified h2{font-size:19px!important;margin:0 0 12px!important}
+.food-unified .fu-card{background:#f4f4f1;border:1px solid #d6d8d2;border-radius:16px;padding:19px;margin:12px 0}
+.food-unified .fu-card .grid>.stat{background:#e5e6e2!important;border:1px solid #d0d4cc!important;color:#343a35!important}
+.food-unified .fu-card .stat .big{color:#303630!important;-webkit-text-fill-color:#303630!important}
+.food-unified textarea,.food-unified input{background:#fafaf8!important;color:#303630!important}
+.food-unified .fu-status{font-size:12px;color:#737b73;margin-top:9px;line-height:1.6}
+.food-unified .fu-item{border-bottom:1px solid #d8dad4;padding:10px 0;display:flex;justify-content:space-between;gap:12px;align-items:start}
+.food-unified .fu-item b{font-size:14px;color:#343a35}.food-unified .fu-item small{font-size:12px;color:#727a72}
+.food-unified .fu-item button{flex:none}
+.food-unified .fu-source{font-size:11px;color:#7b837a;margin-top:3px}
+.food-unified details{margin-top:12px;border-top:1px solid #d8dad4;padding-top:12px}
+.food-unified details summary{cursor:pointer;font-size:13px;color:#656d65}
+.food-unified .fu-actions{display:flex;gap:9px;margin-top:10px}
+.food-unified .fu-actions button{flex:1}
+.food-unified .fu-preview{margin-top:13px}
+.food-unified .fu-preview .fu-item{display:block}
+.food-unified .fu-water{margin-top:12px}
+.food-unified .fu-water .card{margin:0!important;border:0!important;background:transparent!important;padding:0!important}
+.food-unified .fu-water .card h2{font-size:17px!important}
 </style></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
 <rect fill="#b4d6d8" height="430" width="480"></rect><path d="M0 95Q110 20 218 100T480 60V430H0Z" fill="#a9c6ad"></path><path d="M0 140Q100 91 225 142T480 110V430H0Z" fill="url(#grass)"></path>
@@ -1232,5 +1256,96 @@ function jumpToPetWorld(){go('home');const target=document.querySelector('.pet-s
   const count=pending.length;pending=[];save();el('aiFoodSave').disabled=true;el('aiFoodResult').textContent='已加入今日飲食';status('已儲存 '+count+' 項');
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
+})();
+</script><script id="unifiedFoodWorkflow">
+(function(){
+let apiKey='',pending=[],busy=false;
+const byId=id=>document.getElementById(id);
+const round=x=>{const n=Number(x);return Number.isFinite(n)&&n>=0?Math.round(n*10)/10:0};
+const clean=x=>String(x||'').trim().slice(0,100);
+const status=t=>{const e=byId('fuStatus');if(e)e.textContent=t};
+function findLocal(line){
+ const parsed=typeof parseQuickLine==='function'?parseQuickLine(line):null;
+ if(parsed&&!parsed.error)return {...parsed,name:parsed.name||parsed.raw,source:'資料庫'};
+ const m=line.match(/^(.*?)\s*(\d+(?:\.\d+)?)\s*(g|公克|克|ml|毫升)$/i);
+ if(m&&typeof nutritionCatalog!=='undefined'){
+  const d=nutritionCatalog.find(x=>x.name===m[1].trim());
+  if(d){const qty=Number(m[2]),unit=m[3].toLowerCase(),liquid=d.category==='乳品飲料';
+   if((liquid&&['ml','毫升'].includes(unit))||(!liquid&&['g','公克','克'].includes(unit))){
+    const factor=qty/100;return {name:d.name,n:qty,unit:liquid?'ml':'g',k:round(d.k*factor),p:round(d.p*factor),c:round(d.c*factor),f:round(d.f*factor),source:'資料庫'};
+   }
+  }
+ }
+ return null;
+}
+async function gemini(lines){
+ if(!apiKey)throw Error('有食物不在資料庫，請先展開「Gemini API 設定」並輸入金鑰');
+ const prompt='請只估算下列食物，不要加入未提及的項目。請輸出 JSON 物件 {"items":[{"name":"名稱與份量","k":0,"p":0,"c":0,"f":0}],"note":"不確定性"}。k 是 kcal，其餘為 g。無法估算則回傳空陣列。輸入：'+lines.join('；');
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),45000);
+ let response;
+ try{response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{responseMimeType:'application/json',temperature:0.1}}),signal:ctrl.signal})}finally{clearTimeout(timer)}
+ if(!response.ok){let msg='HTTP '+response.status;try{const j=await response.json();msg=j.error?.message||msg}catch{}throw Error(msg)}
+ const data=await response.json();const raw=(data.candidates?.[0]?.content?.parts||[]).map(x=>x.text||'').join('');
+ const parsed=JSON.parse(raw||'{}');
+ return {items:(Array.isArray(parsed.items)?parsed.items:[]).slice(0,20).map(x=>({name:clean(x.name),n:1,unit:'份',k:round(x.k),p:round(x.p),c:round(x.c),f:round(x.f),source:'Gemini 估算'})).filter(x=>x.name),note:String(parsed.note||'').slice(0,250)};
+}
+function showPreview(note=''){
+ const root=byId('fuPreview');root.replaceChildren();
+ pending.forEach(x=>{
+  const div=document.createElement('div');div.className='fu-item';
+  const title=document.createElement('b');title.textContent=x.name;
+  const info=document.createElement('div');info.textContent=x.k+' kcal · P '+x.p+'g · C '+x.c+'g · F '+x.f+'g';
+  const source=document.createElement('div');source.className='fu-source';source.textContent=x.source;
+  div.append(title,info,source);root.append(div);
+ });
+ if(note){const p=document.createElement('p');p.className='fu-status';p.textContent=note;root.append(p)}
+ byId('fuSave').disabled=!pending.length;
+}
+async function analyze(){
+ if(busy)return;
+ const lines=byId('fuText').value.split(/[\n,，、;；]+/).map(x=>x.trim()).filter(Boolean);
+ if(!lines.length){status('請先輸入食物與份量');return}
+ busy=true;byId('fuAnalyze').disabled=true;byId('fuSave').disabled=true;pending=[];
+ const local=[],unknown=[];
+ lines.forEach(line=>{const match=findLocal(line);if(match)local.push(match);else unknown.push(line)});
+ pending=local;showPreview();
+ try{
+  if(unknown.length){
+   status('資料庫找到 '+local.length+' 項，另外 '+unknown.length+' 項正在使用 Gemini 估算…');
+   const ai=await gemini(unknown);pending=[...local,...ai.items];showPreview(ai.note);
+   status('資料庫 '+local.length+' 項 · Gemini '+ai.items.length+' 項。請確認估算值再儲存');
+  }else status('全部 '+local.length+' 項均由本機資料庫辨識，不會呼叫 Gemini API');
+ }catch(e){showPreview();status('資料庫辨識 '+local.length+' 項；其餘未加入：'+(e.name==='AbortError'?'連線逾時':e.message))}
+ finally{busy=false;byId('fuAnalyze').disabled=false}
+}
+function savePending(){
+ if(!pending.length)return;
+ pending.forEach(x=>state.foods.push({date:today(),name:x.name,n:x.n||1,unit:x.unit||'份',k:x.k,p:x.p,c:x.c,f:x.f}));
+ const count=pending.length;pending=[];byId('fuText').value='';showPreview();save();status('已加入今日飲食 '+count+' 項');
+}
+function init(){
+ const food=byId('food');if(!food||food.dataset.unified)return;
+ const original=byId('foodEntries'),water=byId('waterText')?.closest('.card'),stats=byId('foodKcal')?.closest('.card'),goal=byId('calGoal');
+ if(!original||!water||!stats)return;
+ const wrapper=document.createElement('div');wrapper.className='food-unified';
+ wrapper.innerHTML='<div class="muji-heading"><small>FOOD JOURNAL</small><h2>飲食紀錄</h2><p>輸入食物，優先使用資料庫，找不到再交由 Gemini 估算。</p></div><div class="fu-card"><h2>輸入飲食</h2><textarea id="fuText" rows="3" placeholder="例如：水煮蛋2顆、雞胸肉150g、牛肉麵一碗"></textarea><button class="primary" id="fuAnalyze" type="button" style="width:100%;margin-top:10px">辨識並預覽</button><div class="fu-status" id="fuStatus">資料庫可直接辨識；找不到時才使用 Gemini API。</div><div class="fu-preview" id="fuPreview"></div><button id="fuSave" type="button" style="width:100%;margin-top:10px" disabled>確認加入今日飲食</button><details><summary>Gemini API 設定（選填）</summary><label for="fuKey">API Key</label><input id="fuKey" type="password" autocomplete="off" spellcheck="false" placeholder="Google AI Studio API Key"><div class="fu-actions"><button id="fuKeySave" type="button">使用金鑰</button><button id="fuKeyClear" type="button">清除</button></div><p class="fu-status">金鑰僅暫存在此頁記憶體，不會存入 GitHub 或 localStorage。由瀏覽器直接呼叫 Gemini，請限制配額；API 可能產生費用。</p></details></div><div class="fu-card" id="fuToday"><h2>今天吃了什麼</h2><div id="fuDailyEntries"></div></div><div class="fu-card" id="fuStats"><h2>今日營養總覽</h2></div><div class="fu-card fu-water" id="fuWater"></div>';
+ food.append(wrapper);
+ byId('fuDailyEntries').append(original);
+ byId('fuStats').append(stats);
+ byId('fuWater').append(water);
+ const nutrition=stats.querySelector('h2');if(nutrition)nutrition.remove();
+ const targetGoal=goal?.closest('label');if(targetGoal)targetGoal.style.display='none';
+ if(goal){goal.style.display='none';const btn=goal.nextElementSibling;if(btn?.tagName==='BUTTON')btn.style.display='none'}
+ const noEntries=document.createElement('p');noEntries.className='fu-status';noEntries.id='fuEmpty';noEntries.textContent='今天還沒有飲食紀錄';
+ byId('fuDailyEntries').append(noEntries);
+ const refresh=()=>{noEntries.style.display=original.children.length?'none':'block'};
+ new MutationObserver(refresh).observe(original,{childList:true});refresh();
+ byId('fuAnalyze').addEventListener('click',analyze);
+ byId('fuSave').addEventListener('click',savePending);
+ byId('fuKeySave').addEventListener('click',()=>{const k=byId('fuKey').value.trim();if(!k){status('請輸入 Gemini API Key');return}apiKey=k;byId('fuKey').value='';status('已暫時載入 Gemini API Key')});
+ byId('fuKeyClear').addEventListener('click',()=>{apiKey='';byId('fuKey').value='';status('已清除 API Key')});
+ food.dataset.unified='1';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script></body></html>
