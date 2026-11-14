@@ -1389,6 +1389,10 @@ function init(){
  const wrapper=document.createElement('div');wrapper.className='food-unified';
  wrapper.innerHTML='<div class="muji-heading"><small>FOOD JOURNAL</small><h2>飲食紀錄</h2><p>輸入食物，優先使用資料庫，找不到再交由 Gemini 估算。</p></div><div class="fu-card"><h2>輸入飲食</h2><textarea id="fuText" rows="3" placeholder="例如：水煮蛋2顆、雞胸肉150g、牛肉麵一碗"></textarea><button class="primary" id="fuAnalyze" type="button" style="width:100%;margin-top:10px">辨識並預覽</button><div class="fu-status" id="fuStatus">資料庫可直接辨識；找不到時才使用 Gemini API。</div><div class="fu-preview" id="fuPreview"></div><button id="fuSave" type="button" style="width:100%;margin-top:10px" disabled>確認加入今日飲食</button><details><summary>Gemini API 設定（選填）</summary><label for="fuKey">API Key</label><input id="fuKey" type="password" autocomplete="off" spellcheck="false" placeholder="Google AI Studio API Key"><div class="fu-actions"><button id="fuKeySave" type="button">使用金鑰</button><button id="fuKeyClear" type="button">清除</button></div><p class="fu-status">金鑰僅暫存在此頁記憶體，不會存入 GitHub 或 localStorage。由瀏覽器直接呼叫 Gemini，請限制配額；API 可能產生費用。</p></details></div><div class="fu-card" id="fuToday"><h2>今天吃了什麼</h2><div id="fuDailyEntries"></div></div><div class="fu-card" id="fuStats"><h2>今日營養總覽</h2></div><div class="fu-card fu-water" id="fuWater"></div>';
  food.append(wrapper);
+ // Show today's food first, followed by the food entry form.
+ const todayCard=byId('fuToday');
+ const inputCard=byId('fuText')?.closest('.fu-card');
+ if(todayCard&&inputCard)wrapper.insertBefore(todayCard,inputCard);
  // Keep legacy elements mounted for existing render functions, but remove all old panels from view.
  [...food.children].filter(node=>node!==wrapper).forEach(node=>{
   node.style.setProperty('display','none','important');
