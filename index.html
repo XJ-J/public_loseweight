@@ -694,6 +694,17 @@ html body #nav.nav button span{display:none!important}
 #food .food-unified[data-api-ready="1"] .fu-api-connected{display:flex}
 #food .food-unified[data-api-ready="1"] .fu-api-settings{display:none}
 #food .food-unified .fu-api-connected button{padding:7px 11px!important;font-size:12px!important;min-height:32px!important}
+</style><style id="homeCalorieGoalStyle">#home .home-calorie-goal{margin:14px 0 20px;padding:20px;border:1px solid #d2d6ce;border-radius:17px;background:#f4f4f1;color:#333b35}
+#home .home-calorie-goal .hcg-heading{font-size:13px;color:#737b73;letter-spacing:.04em;margin-bottom:11px}
+#home .home-calorie-goal .hcg-values{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+#home .home-calorie-goal .hcg-current{font-size:31px;font-weight:700;line-height:1.25;color:#303832}
+#home .home-calorie-goal .hcg-target{font-size:17px;color:#777f76}
+#home .home-calorie-goal .hcg-progress{height:7px;border-radius:20px;background:#dfe3dc;overflow:hidden;margin:15px 0 8px}
+#home .home-calorie-goal .hcg-progress>div{height:100%;width:0;background:#8d9a8c;border-radius:20px;transition:width .2s}
+#home .home-calorie-goal .hcg-detail{font-size:12px;color:#747c74}
+#home .home-calorie-goal .hcg-edit{margin-top:13px;display:flex;gap:8px;align-items:center}
+#home .home-calorie-goal .hcg-edit input{width:130px;min-width:0;background:#fafaf8;color:#303832;font-size:14px;padding:10px;border:1px solid #cdd2ca;border-radius:9px}
+#home .home-calorie-goal .hcg-edit button{min-height:40px;padding:8px 13px;font-size:13px;border-radius:9px}
 </style></head><body><div id="toast"></div><main><header><div><small>YOUR DAILY SPACE</small><h1>mellow</h1><small>a little better, every day</small></div><div class="tag" id="level">Lv.1</div></header><section id="home"><div class="minimal-shortcuts" aria-label="功能捷徑"><button type="button" onclick="go('study')" class="minimal-shortcut"><span class="minimal-symbol study-symbol">01</span><span><strong>讀書計畫</strong><small>專注與每日安排</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('food')" class="minimal-shortcut"><span class="minimal-symbol food-symbol">02</span><span><strong>飲食紀錄</strong><small>營養、食物與餐點靈感</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('calendar')" class="minimal-shortcut"><span class="minimal-symbol calendar-symbol">03</span><span><strong>生活日曆</strong><small>讀書安排與體重趨勢</small></span><span class="minimal-arrow">↗</span></button><button type="button" onclick="go('fitness')" class="minimal-shortcut"><span class="minimal-symbol fitness-symbol">05</span><span><strong>運動紀錄</strong><small>活動與身體管理</small></span><span class="minimal-arrow">↗</span></button></div><div class="world-hub" id="worldHub"><div class="world-top"><div><small>✦ MELLOW · OVERVIEW</small><h2>今日總覽</h2><p>選擇需要使用的功能。</p></div><button aria-label="切換日夜場景" class="world-sky-btn" id="worldSky" onclick="toggleWorldSky()">☾ 夜景</button></div><div class="world-scene pixel-town-scene" id="worldScene"><svg aria-label="可探索的像素介面，點擊建築進入功能" class="pixel-town-map" role="img" viewbox="0 0 480 430" xmlns="http://www.w3.org/2000/svg">
 <defs><pattern height="22" id="grass" patternunits="userSpaceOnUse" width="22"><rect fill="#a6c7a0" height="22" width="22"></rect><path d="M3 8h4m10 8h3" stroke="#87b28d" stroke-width="2"></path></pattern><pattern height="18" id="stone" patternunits="userSpaceOnUse" width="24"><rect fill="#eedbc1" height="18" width="24"></rect><path d="M0 9h24M12 0v9M5 9v9" stroke="#d7bea5" stroke-width="1.5"></path></pattern></defs>
 <rect fill="#b4d6d8" height="430" width="480"></rect><path d="M0 95Q110 20 218 100T480 60V430H0Z" fill="#a9c6ad"></path><path d="M0 140Q100 91 225 142T480 110V430H0Z" fill="url(#grass)"></path>
@@ -1371,6 +1382,38 @@ function init(){
  byId('fuKeySave').addEventListener('click',()=>{const k=byId('fuKey').value.trim();if(!k){status('請輸入 Gemini API Key');return}apiKey=k;byId('fuKey').value='';wrapper.dataset.apiReady='1';if(keySettings)keySettings.open=false;status('Gemini API 已設定，找不到資料庫食物時會自動辨識')});
  byId('fuKeyClear').addEventListener('click',()=>{apiKey='';wrapper.dataset.apiReady='0';byId('fuKey').value='';status('已清除 API Key')});
  food.dataset.unified='1';
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script><script id="homeCalorieGoalFeature">
+(function(){
+ const get=id=>document.getElementById(id);
+ function update(){
+  const card=get('homeCalorieGoal');if(!card||typeof state==='undefined')return;
+  const eaten=typeof totals==='function'?Number(totals().k)||0:0;
+  const goal=Number(state.calGoal)||0;
+  get('hcgCurrent').textContent=Math.round(eaten).toLocaleString('zh-TW')+' kcal';
+  get('hcgTarget').textContent=goal?'/ '+goal.toLocaleString('zh-TW')+' kcal':'/ 尚未設定目標';
+  get('hcgProgress').style.width=goal?Math.min(100,eaten/goal*100)+'%':'0%';
+  get('hcgDetail').textContent=goal?'今日已記錄 '+Math.round(eaten/goal*100)+'% · '+(eaten<=goal?'距離設定目標 '+Math.round(goal-eaten)+' kcal':'比設定目標多 '+Math.round(eaten-goal)+' kcal'):'可自行設定目標，不限制熱量數值';
+ }
+ function init(){
+  const home=get('home'),shortcuts=home?.querySelector('.minimal-shortcuts');if(!home||!shortcuts||get('homeCalorieGoal'))return;
+  const card=document.createElement('section');card.id='homeCalorieGoal';card.className='home-calorie-goal';
+  card.innerHTML='<div class="hcg-heading">今日熱量 / 目標熱量</div><div class="hcg-values"><strong class="hcg-current" id="hcgCurrent">0 kcal</strong><span class="hcg-target" id="hcgTarget">/ 尚未設定目標</span></div><div class="hcg-progress"><div id="hcgProgress"></div></div><div class="hcg-detail" id="hcgDetail"></div><div class="hcg-edit"><input id="hcgGoalInput" type="number" min="1" step="any" inputmode="decimal" placeholder="目標 kcal" aria-label="每日熱量目標"><button type="button" id="hcgSaveGoal">設定目標</button></div>';
+  shortcuts.before(card);
+  get('hcgSaveGoal').addEventListener('click',()=>{
+   const value=Number(get('hcgGoalInput').value);
+   if(!Number.isFinite(value)||value<=0){get('hcgDetail').textContent='請輸入大於零的數字';return}
+   state.calGoal=value;
+   const legacy=get('calGoal');if(legacy)legacy.value=String(value);
+   if(typeof save==='function')save();
+   get('hcgGoalInput').value='';
+   update();
+  });
+  const source=get('homeCalories');
+  if(source)new MutationObserver(update).observe(source,{childList:true,characterData:true,subtree:true});
+  update();
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
