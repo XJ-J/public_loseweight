@@ -1628,6 +1628,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 #foodCalendarV16 #fcSave{background:#d6ded4!important;border-color:#a4b5a6!important;color:#2d4131!important;font-weight:700!important}
 #foodCalendarV16 .notice{color:#737b73!important;font-size:12px!important;line-height:1.6!important}
 @media(max-width:420px){#foodCalendarV16{padding:13px!important}#foodCalendarV16 .fc-grid{gap:3px!important}#foodCalendarV16 .fc-grid button{min-height:38px!important}#foodCalendarV16 .fc-entry{padding:10px!important}}
+#foodCalendarV16 .fc-ai-panel{background:#e8eae5;border:1px solid #d0d4cc;border-radius:12px;padding:12px;margin:14px 0}#foodCalendarV16 .fc-ai-line{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:7px 0}#foodCalendarV16 .fc-ai-line button{width:auto!important;flex:1!important;min-width:0!important}#foodCalendarV16 .fc-switch{display:flex!important;align-items:center;gap:6px}#foodCalendarV16 .fc-switch input{width:19px!important;min-height:19px!important;margin:0!important}#foodCalendarV16 #fcAISettings{margin:12px 0}#foodCalendarV16 #fcAISettings summary{cursor:pointer;font-weight:650}#foodCalendarV16 #fcRetryAI{width:100%!important;background:#d6ded4!important;color:#2d4131!important;border:1px solid #a4b5a6!important;border-radius:10px!important;padding:9px!important}#foodCalendarV16 #fcAIStatus{margin:9px 0!important}
 </style>
 <script id="mellow-food-calendar-v16">
 (function(){
@@ -1659,11 +1660,54 @@ function repaint(){
 }
 function shift(n){const [y,m]=month.split('-').map(Number),d=new Date(y,m-1+n,1);month=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');selected=month+'-01';clear();repaint()}
 function init(){const food=E('food');if(!food||E('foodCalendarV16'))return;selected=today();month=selected.slice(0,7);const card=document.createElement('div');card.className='card';card.id='foodCalendarV16';
- card.innerHTML='<small style="letter-spacing:1.6px;color:#737b73;font-size:10px;font-weight:800">FOOD DIARY · v1.6 NEW</small><h2>飲食日曆與未來規劃</h2><div class="fc-row"><button id="fcPrev" type="button">‹</button><b id="fcMonth"></b><button id="fcNext" type="button">›</button><button id="fcToday" type="button">今天</button></div><div class="fc-grid" style="text-align:center;font-size:12px;color:#967c82;margin-bottom:5px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="fcGrid" class="fc-grid"></div><p class="notice">深灰圓點：實際紀錄　綠色圓點：未來計畫</p><h3 id="fcDate"></h3><div class="fc-row"><button id="fcActual" type="button">實際飲食</button><button id="fcPlan" type="button">飲食計畫</button></div><div id="fcTotals" class="notice"></div><div id="fcEntries"></div><h3>新增／編輯餐點</h3><input id="fcEdit" type="hidden"><label>食物名稱<input id="fcName" maxlength="100" placeholder="例如：豆腐、雞蛋、優格"></label><div class="fc-fields"><label>份量<input id="fcQty" type="number" min="0.01" step="any" value="1"></label><label>單位<select id="fcUnit"><option>份</option><option>g</option><option>ml</option></select></label><label>熱量 kcal<input id="fck" type="number" min="0" step="any"></label><label>蛋白質 g<input id="fcp" type="number" min="0" step="any"></label><label>碳水 g<input id="fcc" type="number" min="0" step="any"></label><label>脂肪 g<input id="fcf" type="number" min="0" step="any"></label></div><p class="notice">營養素填入整筆食物的總量。計畫不會算入實際攝取。</p><div class="fc-row"><button id="fcClear" type="button">清除</button><button id="fcSave" type="button" class="primary">儲存餐點</button></div>';
+ card.innerHTML='<small style="letter-spacing:1.6px;color:#737b73;font-size:10px;font-weight:800">FOOD DIARY · v1.6 NEW</small><h2>飲食日曆與未來規劃</h2><div class="fc-row"><button id="fcPrev" type="button">‹</button><b id="fcMonth"></b><button id="fcNext" type="button">›</button><button id="fcToday" type="button">今天</button></div><div class="fc-grid" style="text-align:center;font-size:12px;color:#967c82;margin-bottom:5px"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div id="fcGrid" class="fc-grid"></div><p class="notice">深灰圓點：實際紀錄　綠色圓點：未來計畫</p><h3 id="fcDate"></h3><div class="fc-row"><button id="fcActual" type="button">實際飲食</button><button id="fcPlan" type="button">飲食計畫</button></div><div id="fcTotals" class="notice"></div><div id="fcEntries"></div><h3>新增／編輯餐點</h3><p class="notice">輸入食物與份量，停頓約 1.5 秒後自動查詢資料庫；找不到時使用 Gemini AI 估算，確認後再儲存。</p><input id="fcEdit" type="hidden"><label>食物名稱<input id="fcName" maxlength="100" placeholder="例如：豆腐、雞蛋、優格"></label><div class="fc-fields"><label>份量<input id="fcQty" type="number" min="0.01" step="any" value="1"></label><label>單位<select id="fcUnit"><option>份</option><option>g</option><option>ml</option></select></label><label>熱量 kcal<input id="fck" type="number" min="0" step="any"></label><label>蛋白質 g<input id="fcp" type="number" min="0" step="any"></label><label>碳水 g<input id="fcc" type="number" min="0" step="any"></label><label>脂肪 g<input id="fcf" type="number" min="0" step="any"></label></div><div class="fc-ai-panel"><div class="fc-ai-line"><strong>AI 自動辨識</strong><label class="fc-switch"><input type="checkbox" id="fcAutoAI" checked>啟用</label></div><div id="fcAIStatus" class="notice" role="status" aria-live="polite">輸入食物名稱即可自動辨識；估算結果可手動修改。</div><details id="fcAISettings"><summary>Gemini API 金鑰設定（選填）</summary><label>API Key<input id="fcAIKey" type="password" autocomplete="off" spellcheck="false" placeholder="Google AI Studio API Key"></label><div class="fc-ai-line"><button id="fcKeySet" type="button">使用金鑰</button><button id="fcKeyClear" type="button">清除金鑰</button></div><p class="notice">金鑰僅暫存在本頁記憶體，不會寫入 GitHub 或本機儲存。Gemini 呼叫可能產生費用；只在輸入停止且資料庫找不到時呼叫。</p></details><button id="fcRetryAI" type="button">重新辨識這項食物</button></div><p class="notice">營養素填入整筆食物的總量。計畫不會算入實際攝取。</p><div class="fc-row"><button id="fcClear" type="button">清除</button><button id="fcSave" type="button" class="primary">儲存餐點</button></div>';
  const unified=food.querySelector('.food-unified');if(unified){const heading=unified.querySelector('.muji-heading');if(heading)heading.after(card);else unified.prepend(card)}else food.insertBefore(card,food.firstChild);
  E('fcPrev').onclick=()=>shift(-1);E('fcNext').onclick=()=>shift(1);E('fcToday').onclick=()=>{selected=today();month=selected.slice(0,7);clear();repaint()};
  E('fcActual').onclick=()=>{tab='actual';clear();repaint()};E('fcPlan').onclick=()=>{tab='plan';clear();repaint()};E('fcClear').onclick=clear;
  E('fcSave').onclick=()=>{const name=E('fcName').value.trim(),n=Number(E('fcQty').value);if(!name||!Number.isFinite(n)||n<=0){alert('請填寫食物名稱及有效份量');return}const data={date:selected,name,n,unit:E('fcUnit').value};for(const k of ['k','p','c','f'])data[k]=Math.round(number(E('fc'+k).value)*10)/10;const idx=E('fcEdit').value;if(idx!==''){if(items()[Number(idx)])items()[Number(idx)]={...items()[Number(idx)],...data}}else items().push(data);clear();save();repaint()};
+ 
+ // Keep one integrated food-entry form; preserve the old form's business logic and saved records.
+ const legacyInput=E('fuText')?.closest('.fu-card');if(legacyInput)legacyInput.style.setProperty('display','none','important');
+ let secret='',timer=null,sequence=0,lastRecognized='',editing=false;
+ const msg=t=>{const node=E('fcAIStatus');if(node)node.textContent=t};
+ const val=v=>{const n=Number(v);return Number.isFinite(n)&&n>=0?Math.round(n*10)/10:0};
+ const apply=x=>{for(const k of ['k','p','c','f'])E('fc'+k).value=val(x[k]);if(x.n&&Number(x.n)>0)E('fcQty').value=x.n;if(x.unit&&['份','g','ml'].includes(x.unit))E('fcUnit').value=x.unit};
+ const parseLine=line=>{try{if(typeof parseQuickLine==='function'){const x=parseQuickLine(line);if(x&&!x.error)return x}}catch(e){}return null};
+ async function recognize(force=false){
+  if(editing&&!force)return;
+  const line=E('fcName').value.trim();if(!line||!E('fcAutoAI').checked)return;
+  const seq=++sequence;if(!force&&line===lastRecognized)return;
+  lastRecognized=line;
+  const local=parseLine(line);
+  if(local){apply(local);msg('已從食物資料庫辨識：'+line+'。可修改營養數值後儲存。');return}
+  if(!secret){msg('資料庫沒有這項食物。請展開下方「Gemini API 金鑰設定」填入金鑰，以使用 AI 自動估算。');return}
+  if(typeof window.mellowGeminiRequest!=='function'){msg('目前 AI 服務未載入，請重新整理網頁。');return}
+  msg('Gemini 正在估算「'+line+'」的營養素…');E('fcRetryAI').disabled=true;
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
+  try{
+   const prompt='請辨識以下食物名稱及份量，估算整份熱量(kcal)、蛋白質(g)、碳水(g)、脂肪(g)。只回傳 JSON object，格式 {"items":[{"name":"名稱","k":100,"p":10,"c":10,"f":3}]}，不要 markdown，不要添加未提及食物。食物：'+line;
+   const response=await window.mellowGeminiRequest(secret,[{text:prompt}],controller.signal);
+   if(!response.ok){let error='HTTP '+response.status;try{const body=await response.json();error=body.error?.message||error}catch(e){}throw Error(error)}
+   const data=await response.json(),raw=(data.candidates?.[0]?.content?.parts||[]).map(x=>x.text||'').join('');
+   const parsed=JSON.parse(raw.replace(/^\x60\x60\x60(?:json)?\s*/i,'').replace(/\s*\x60\x60\x60$/,''));
+   const x=Array.isArray(parsed.items)?parsed.items[0]:null;
+   if(seq!==sequence||E('fcName').value.trim()!==line)return;
+   if(!x)throw Error('沒有取得有效的營養估算');
+   apply(x);msg('Gemini 已估算完成。請核對份量及營養素，再按「儲存餐點」。');
+  }catch(e){if(seq===sequence)msg('AI 辨識失敗：'+(e.name==='AbortError'?'連線逾時':e.message)+'。仍可手動輸入營養素。')}
+  finally{clearTimeout(timeout);E('fcRetryAI').disabled=false}
+ }
+ const queue=()=>{clearTimeout(timer);sequence++;lastRecognized='';if(!E('fcAutoAI').checked)return;msg('等待輸入完成後自動辨識…');timer=setTimeout(()=>recognize(),1500)};
+ E('fcName').addEventListener('input',()=>{editing=false;queue()});
+ E('fcQty').addEventListener('change',()=>{if(E('fcName').value.trim())queue()});
+ E('fcUnit').addEventListener('change',()=>{if(E('fcName').value.trim())queue()});
+ E('fcAutoAI').addEventListener('change',()=>{if(E('fcAutoAI').checked)queue();else{clearTimeout(timer);sequence++;msg('已暫停 AI 自動辨識')}})
+ E('fcRetryAI').onclick=()=>{editing=false;lastRecognized='';clearTimeout(timer);recognize(true)};
+ E('fcKeySet').onclick=()=>{const key=E('fcAIKey').value.trim();if(!key){msg('請輸入 Gemini API Key');return}secret=key;E('fcAIKey').value='';E('fcAISettings').open=false;msg('Gemini 金鑰已在本頁啟用，現在可自動辨識。');if(E('fcName').value.trim())queue()};
+ E('fcKeyClear').onclick=()=>{secret='';E('fcAIKey').value='';msg('已清除 Gemini 金鑰。資料庫辨識仍可使用。')};
+ const originalClear=E('fcClear').onclick;E('fcClear').onclick=()=>{clearTimeout(timer);sequence++;lastRecognized='';editing=false;originalClear();msg('已清除輸入內容')};
+ const originalSave=E('fcSave').onclick;E('fcSave').onclick=()=>{clearTimeout(timer);sequence++;originalSave();lastRecognized='';editing=false};
+ const originalEntries=E('fcEntries');originalEntries.addEventListener('click',e=>{if(e.target?.textContent==='編輯'){editing=true;clearTimeout(timer);sequence++;msg('編輯模式：保留原有營養素，不會自動覆寫；按「重新辨識」可重新估算。')}});
  repaint()}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
