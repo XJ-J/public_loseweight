@@ -1712,4 +1712,43 @@ function init(){const food=E('food');if(!food||E('foodCalendarV16'))return;selec
  repaint()}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+</script><style id="mellow-reset-records-style">
+#mellowResetRecords{background:#f5f5f2!important;border:1px solid #d6dad3!important;color:#343b35!important;border-radius:16px!important;margin:18px 0!important;padding:18px!important}
+#mellowResetRecords h2{color:#343b35!important;margin:0 0 10px!important}
+#mellowResetRecords p{color:#626c64!important;line-height:1.65!important}
+#mellowResetRecords button{width:100%!important;background:#e8eae5!important;color:#343b35!important;border:1px solid #bfc8bd!important;box-shadow:none!important;border-radius:10px!important;padding:12px!important;margin-top:8px!important}
+#mellowResetRecords #mellowResetConfirm{background:#e6e8e3!important;border:1px solid #a8b7a8!important}
+#mellowResetRecords input{width:100%!important;box-sizing:border-box!important;background:#fff!important;color:#343b35!important;border:1px solid #c8cec5!important;border-radius:9px!important;padding:10px!important}
+</style>
+<script id="mellowResetRecordsFeature">
+(function(){
+ const RECORD_KEYS=['mellow-pixel-v143','lifequest-v1-pet-demo-132','mellow_cv_custom','mellow-food-ai-cache-v1','mellow_world_sky','mellow_world_palette'];
+ const KEEP_KEY='mellow-gemini-api-key-v1';
+ function mount(){
+  const page=document.getElementById('settings');
+  if(!page||document.getElementById('mellowResetRecords'))return;
+  const card=document.createElement('div');card.id='mellowResetRecords';card.className='card';
+  card.innerHTML='<h2>資料管理</h2><p>清除這台裝置上 mellow 的所有過往紀錄，包含待辦、讀書、飲食、體重、運動、寵物、獎勵與自訂資料。<strong>Gemini API Key 不會被刪除。</strong></p><p><strong>注意：</strong>清除後無法復原；此操作只影響目前瀏覽器的本機資料，不會刪除 GitHub 程式，也不會清除其他裝置的資料。</p><button type="button" id="mellowResetStart">清除所有過往紀錄（保留 API Key）</button><div id="mellowResetStep" hidden><p>請輸入「清除所有紀錄」以確認永久刪除。建議先自行備份重要紀錄。</p><input id="mellowResetPhrase" autocomplete="off" placeholder="輸入：清除所有紀錄"><button id="mellowResetConfirm" type="button" disabled>確認永久清除</button><button id="mellowResetCancel" type="button">取消</button></div><p id="mellowResetStatus" role="status" aria-live="polite"></p>';
+  page.appendChild(card);
+  const el=id=>document.getElementById(id),phrase='清除所有紀錄';
+  el('mellowResetStart').onclick=()=>{el('mellowResetStep').hidden=false;el('mellowResetPhrase').value='';el('mellowResetConfirm').disabled=true;el('mellowResetPhrase').focus()};
+  el('mellowResetCancel').onclick=()=>{el('mellowResetStep').hidden=true;el('mellowResetStatus').textContent='已取消，資料未變更'};
+  el('mellowResetPhrase').oninput=()=>{el('mellowResetConfirm').disabled=el('mellowResetPhrase').value.trim()!==phrase};
+  el('mellowResetConfirm').onclick=()=>{
+   if(el('mellowResetPhrase').value.trim()!==phrase)return;
+   if(!window.confirm('最後確認：確定永久清除這台裝置所有 mellow 過往紀錄？Gemini API Key 將保留。'))return;
+   try{
+    // Do not use localStorage.clear(): unrelated site settings and Gemini key must survive.
+    const keys=new Set(RECORD_KEYS);
+    for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k!==KEEP_KEY&&(k.startsWith('mellow-')||k.startsWith('lifequest-')))keys.add(k)}
+    keys.delete(KEEP_KEY);
+    for(const k of keys)localStorage.removeItem(k);
+    // Prevent a pre-existing in-memory state from re-saving deleted data.
+    el('mellowResetStatus').textContent='已清除紀錄，正在重新載入…';
+    window.location.reload();
+   }catch(e){el('mellowResetStatus').textContent='清除失敗：'+e.message+'。請檢查瀏覽器儲存權限。'}
+  };
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+})();
 </script></body></html>
